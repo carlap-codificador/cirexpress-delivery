@@ -1,0 +1,27 @@
+[
+  {
+    "shipment_id": "SH001",
+    "consol_number": "MIA/SXM/01704",
+    "date": "2025-03-27",
+    "consignor": "Toyota Tsusho America",
+    "consignee": "Real Auto BV",
+    "notify_party": "Real Auto BV",
+    "delivery_address": "Longwall Rd. 15, Philipsburg",
+    "carrier": "AS FABRIZIA",
+    "vessel": "AS FABRIZIA",
+    "bill_of_lading": "LCL654380",
+    "release_type": "Delivery Order",
+    "origin": "Port Everglades",
+    "destination": "Philipsburg",
+    "port_of_loading": "Port Everglades",
+    "port_of_discharge": "Philipsburg",
+    "eta": "2025-03-23",
+    "etd": "2025-03-20",
+    "marks_numbers": "N/A",
+    "goods_description": "S.T.C CAR SPARE PARTS",
+    "gross_weight": 1305.00,
+    "volume": 336.717,
+    "packs": 15,
+    "trucker_name": "CIRExpress"
+  }
+]

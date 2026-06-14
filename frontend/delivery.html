@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Entrega</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f4f6f8;
+}
+
+/* HEADER */
+.header {
+    background: #065f46;
+    padding: 15px;
+    text-align: center;
+    color: white;
+}
+
+.header img {
+    height: 45px;
+    object-fit: contain;
+}
+
+/* CONTENIDO */
+.container {
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
+/* BOTÓN */
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    background: #ff6a00;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* FIRMA */
+canvas {
+    width: 100%;
+    height: 150px;
+    border: 2px dashed #ccc;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <img src="/static/logo.png">
+    <h3>Registrar Entrega</h3>
+</div>
+
+<div class="container">
+
+<div class="card" id="details"></div>
+
+<div class="card">
+<h3>Firma del cliente</h3>
+
+<canvas id="canvas"></canvas>
+<button onclick="clearCanvas()">Limpiar</button>
+
+<input type="text" id="receiver" placeholder="Nombre de quien recibe">
+
+<button onclick="send()">Confirmar Entrega</button>
+</div>
+
+</div>
+
+<script>
+const id = new URLSearchParams(window.location.search).get("shipment_id");
+
+fetch(`/api/shipments/${id}`)
+.then(res => res.json())
+.then(data => {
+    document.getElementById("details").innerHTML = `
+        <p><b>Cliente:</b> ${data.consignee}</p>
+        <p><b>Dirección:</b> ${data.delivery_address}</p>
+        <p><b>Carga:</b> ${data.goods_description}</p>
+    `;
+});
+
+// Firma
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+let drawing = false;
+
+// Mouse
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", () => drawing = false);
+canvas.addEventListener("mousemove", draw);
+
+// Touch (celular)
+canvas.addEventListener("touchstart", () => drawing = true);
+canvas.addEventListener("touchend", () => drawing = false);
+canvas.addEventListener("touchmove", function(e) {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+
+    draw({
+        offsetX: touch.clientX - rect.left,
+        offsetY: touch.clientY - rect.top
+    });
+});
+
+function draw(e) {
+    if (!drawing) return;
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.lineWidth = 2;
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function send() {
+    const signature = canvas.toDataURL();
+    const receiver = document.getElementById("receiver").value;
+
+    fetch(`/api/shipments/${id}/pod`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            receiver_name: receiver,
+            signature: signature
+        })
+    })
+    .then(() => alert("Entrega registrada"));
+}
+</script>
+
+</body>
+</html>

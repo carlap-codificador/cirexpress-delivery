@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CIRExpress</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+}
+
+/* HEADER */
+.header {
+    background: #065f46;
+    padding: 15px;
+    text-align: center;
+    color: white;
+}
+
+.header img {
+    width: 120px;
+}
+
+.header h1 {
+    margin: 5px 0 0;
+    font-size: 20px;
+}
+
+/* CONTENIDO */
+.container {
+    padding: 15px;
+}
+
+/* TARJETAS */
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    margin: 0;
+    color: #065f46;
+}
+
+.card p {
+    margin: 5px 0;
+    color: #374151;
+}
+
+/* BOTÓN */
+.btn {
+    display: block;
+    margin-top: 10px;
+    background: #ff6a00;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #e65c00;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <img src="/static/logo.png">
+    <h1>Entregas CIRExpress</h1>
+</div>
+
+<div class="container" id="shipmentList"></div>
+
+<script>
+fetch('/api/shipments')
+.then(res => res.json())
+.then(data => {
+    const container = document.getElementById('shipmentList');
+
+    if (data.length === 0) {
+        container.innerHTML = "<p>No hay envíos disponibles</p>";
+        return;
+    }
+
+    data.forEach(s => {
+        container.innerHTML += `
+        <div class="card">
+            <h3>${s.consignee}</h3>
+            <p><b>Dirección:</b> ${s.delivery_address}</p>
+            <p><b>Carga:</b> ${s.goods_description || 'N/A'}</p>
+            <a class="btn" href="/delivery.html?shipment_id=${s.shipment_id}">
+                Registrar entrega
+            </a>
+        </div>`;
+    });
+});
+</script>
+
+</body>
+</html>

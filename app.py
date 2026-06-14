@@ -25,8 +25,8 @@ def create_app():
     return app
 
 
+import os
+
 if __name__ == "__main__":
     app = create_app()
-    """app.run(debug=True)"""
-    """Para acceso mediante otros dispositivos"""
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
